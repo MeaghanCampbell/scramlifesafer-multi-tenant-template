@@ -1,0 +1,20 @@
+.title {
+    margin-bottom:1em;
+    margin-top:2em;
+    border-bottom:1px solid lightgray;
+    font-weight: 700;
+}
+
+.data {
+    font-size:14px;
+    margin-bottom: .5em;
+    .label {
+        font-weight:600;
+        font-size:16px;
+        background-color: rgb(245, 245, 245);
+        padding:.5em 1em;
+    }
+    .value {
+        padding:.5em 1em;
+    }
+}

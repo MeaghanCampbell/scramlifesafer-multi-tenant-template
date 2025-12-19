@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors */
+  --color-primary-100: hsl(94, 66%, 85%);
+  --color-primary-300: hsl(218 52% 64%);
+  --color-primary-500: hsl(95, 60%, 55%);
+  --color-primary-600: hsl(97, 68%, 44%);
+  --color-primary-900: hsl(115, 65%, 27%);
+  --color-secondary-light: hsl(218, 31%, 37%);
+  --color-secondary-dark: hsl(218, 67%, 17%);
+  --color-error-light:	hsl(8, 69%, 90%);
+  --color-error-dark:	hsl(7, 68%, 49%);
+
+  /* Typography */
+  --text-lg: 1.2rem;
+  --text-md: 1rem;
+  --text-md-readable: 1rem;
+  --text-sm: 0.83rem;
+  --line-height-readable: 1.6rem;
+}
+
+@utility max-w-content {
+  max-width: 78rem;
+}
+
+@layer base {
+
+  body {
+    color: var(--color-secondary-dark);
+  }
+
+  h1 {
+    font-size: 3.815rem; 
+    font-weight: 700;
+  }
+  
+  @media (max-width: 640px) {
+    h1 {
+      font-size: 3rem; 
+    }
+  }
+
+  h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+
+  @media (max-width: 640px) {
+    h2 {
+      font-size: 2rem; 
+    }
+  }
+
+  h3 {
+    font-size: 1.953rem;
+    font-weight: 700;
+  }
+
+  @media (max-width: 640px) {
+    h3 {
+      font-size: 1.5rem;
+    }
+  }
+
+  h4 {
+    font-size: 1.563rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 640px) {
+    h4 {
+      font-size: 1.25rem;
+    }
+  }
+
+  ul li {
+    list-style-type: disc;
+    margin-left:2.5em;
+  }
+
+  ol li {
+    list-style-type: decimal;
+    margin-left:2.5em;
+  }
+
+  .payload-richtext a span,
+  .payload-richtext a {
+    text-decoration: underline;
+  }
+
+  .list-none {
+    list-style-type: none !important;
+  }
+
+  .osano-cm-widget {
+    display:none;
+  }
+
+}
+
+

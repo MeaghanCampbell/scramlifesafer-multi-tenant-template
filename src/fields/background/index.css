@@ -1,0 +1,36 @@
+.field-type.background-select {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .background-options {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .background-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    cursor: pointer;
+    width: 100%;
+    max-width: 250px;
+    margin-bottom: 0.5rem;
+  }
+  
+  .background-option.selected {
+    border: 2px solid #2563eb;
+  }
+  
+  .background-option div {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+  }
+  

@@ -1,0 +1,24 @@
+.export-btn-wrapper {
+    display:flex;
+    justify-content: flex-end;
+    .export-btn {
+        background-color: #6ee7b7;
+        border: none;
+        border-radius: .5em;
+        font-weight:600;
+        font-size:18px;
+        padding:.5em 1em;
+        cursor:pointer;
+        transition-property: color, background-color;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+        display: flex;
+        align-items: flex-start;
+        .export-text {
+            margin-left:.5em;
+        }
+    }
+    .export-btn:hover {
+        background-color: #a7f3d0;
+    }
+}
