@@ -19,7 +19,8 @@ export const Footers: CollectionConfig = {
         update: isTenantAdmin,
     },
     admin: {
-        defaultColumns: ['tenant', 'updatedAt']
+        defaultColumns: ['tenant', 'updatedAt'],
+        group: 'Globals'
     },
     fields: [
         {

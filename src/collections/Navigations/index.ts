@@ -21,6 +21,7 @@ export const Navigations: CollectionConfig = {
     },
     admin: {
         defaultColumns: ['tenant', 'updatedAt'],
+        group: 'Globals'
     },
     fields: [
         {

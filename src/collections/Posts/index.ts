@@ -15,12 +15,18 @@ import { Code } from '../../blocks/Code/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
-import { slugField } from 'payload'
+import { slugField } from '@/fields/slug'
 import meta from '@/fields/meta'
 import featured from '@/fields/featured'
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
+  indexes: [
+    {
+      fields: ['tenant', 'slug'],
+      unique: true,
+    },
+  ],
   access: {
     create: isTenantAdmin,
     delete: isTenantAdmin,
@@ -160,7 +166,7 @@ export const Posts: CollectionConfig<'posts'> = {
         ],
       },
     },
-    slugField(),
+    ...slugField(),
     featured
   ],
   hooks: {

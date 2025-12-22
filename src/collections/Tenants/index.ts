@@ -10,7 +10,8 @@ export const Tenants: CollectionConfig = {
         read: () => true,
     },
     admin: { 
-        useAsTitle: 'name' 
+        useAsTitle: 'name' ,
+        group: 'Admin'
     },
     fields: [
         { 

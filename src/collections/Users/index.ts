@@ -17,6 +17,7 @@ export const Users: CollectionConfig = {
     hidden: (req) => {
       return !req?.user?.role?.includes('super-admin')
     },
+    group: 'Admin'
   },
   auth: {
     forgotPassword: {

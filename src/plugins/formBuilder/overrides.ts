@@ -22,6 +22,9 @@ export const formOverrides = () => ({
     read: () => true,
     update: isTenantAdmin,
   },
+  admin: {
+    group: 'Forms'
+  },
   fields: ({ defaultFields }: { defaultFields: Field[] }): Field[] => {
     // Enhance confirmationMessage editor
     const enhancedDefaults = defaultFields.map((field) => {
