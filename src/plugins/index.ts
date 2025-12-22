@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
 import { seoPlugin } from '@payloadcms/plugin-seo'
@@ -12,6 +11,7 @@ import { formBuilder } from './formBuilder'
 import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant'
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
+import { isSuperAdmin } from '@/access/isSuperAdmin'
 
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
@@ -42,7 +42,9 @@ export const plugins: Plugin[] = [
   }),
   nestedDocsPlugin({
     collections: ['pages'],
-    generateURL: (docs) => docs.reduce((url, doc) => `${url}/${doc.slug}`, ''),
+    generateURL: (docs) =>  {
+      return docs.reduce((url, doc) => `${url}/${String(doc.slug)}`, '')
+    }
   }),
   seoPlugin({
     generateTitle,
@@ -64,16 +66,11 @@ export const plugins: Plugin[] = [
       posts: {},     // tenant-enabled
       forms: {},
       redirects: {},
+      categories: {},
       navigations: { isGlobal: true },
-      footers: { isGlobal: true }
+      footers: { isGlobal: true },
     },
-    userHasAccessToAllTenants: (user) => {
-      // Adjust this to your user shape:
-      // - role could be string or string[]
-      const role = (user as any)?.role
-      if (Array.isArray(role)) return role.includes('super-admin')
-      return String(role).includes('super-admin')
-    },
+    userHasAccessToAllTenants: (user) => isSuperAdmin(user),
     // debug: true, // optional: shows tenant fields in admin for troubleshooting
     // cleanupAfterTenantDelete: false, // optional safety if you don’t want cascading deletes
   }),

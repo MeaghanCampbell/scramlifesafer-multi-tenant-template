@@ -2,7 +2,7 @@ import type { CollectionBeforeChangeHook } from 'payload'
 import { ValidationError } from 'payload'
 
 export const ensureUniqueFullPath: CollectionBeforeChangeHook = async ({ data, req, originalDoc }) => {
-  if (data?._status !== 'published' || !data.fullPath || !data.audience) return data
+  if (data?._status !== 'published' || !data.fullPath || !data.tenant) return data
 
   const excludeSelf = originalDoc?.id
     ? { not_equals: originalDoc.id }
@@ -12,7 +12,7 @@ export const ensureUniqueFullPath: CollectionBeforeChangeHook = async ({ data, r
     collection: 'pages',
     where: {
       and: [
-        { audience: { equals: data.audience } },
+        { tenant: { equals: data.tenant } },
         { fullPath: { equals: data.fullPath } },
         ...(excludeSelf ? [{ id: excludeSelf }] : []),
       ],
@@ -22,7 +22,7 @@ export const ensureUniqueFullPath: CollectionBeforeChangeHook = async ({ data, r
   if (existing.docs.length > 0) {
     throw new ValidationError({
       errors: [{
-          message: `A page with the full path "${data.fullPath}" already exists for this audience.`,
+          message: `A page with the full path "${data.fullPath}" already exists for this tenant.`,
           path: 'fullPath',
         }],
     })

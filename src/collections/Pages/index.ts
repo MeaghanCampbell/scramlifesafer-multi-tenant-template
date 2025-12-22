@@ -8,7 +8,6 @@ import { Spacer } from '@/blocks/Spacer/config'
 import { Text } from '@/blocks/Text/config'
 import { Modal } from '@/blocks/Modal/config'
 import { hero } from '@/heros/config'
-import { slugField } from 'payload'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { isPayloadAdminPanel } from '@/utilities/isPayloadAdminPanel'
@@ -16,9 +15,16 @@ import { revalidateDelete, revalidatePage } from './hooks/revalidatePage'
 import meta from '@/fields/meta'
 import { setFullPathFromBreadcrumbs } from './hooks/setFullPathFromBreadcrumbs'
 import { ensureUniqueFullPath } from './hooks/ensureUniqueFullPath'
+import { slugField } from '@/fields/slug'
 
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
+  indexes: [
+    {
+      fields: ['tenant', 'fullPath'],
+      unique: true,
+    },
+  ],
   access: {
     create: isTenantAdmin,
     delete: isTenantAdmin,
@@ -109,11 +115,11 @@ export const Pages: CollectionConfig<'pages'> = {
         hidden: true,
       }
     },
-    slugField(),
+    ...slugField()
   ],
   hooks: {
     afterChange: [revalidatePage],
-    beforeChange: [populatePublishedAt, ensureUniqueFullPath, setFullPathFromBreadcrumbs],
+    beforeChange: [populatePublishedAt, setFullPathFromBreadcrumbs, ensureUniqueFullPath ],
     afterDelete: [revalidateDelete],
   },
   versions: {

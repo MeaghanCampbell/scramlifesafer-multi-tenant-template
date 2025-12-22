@@ -175,11 +175,8 @@ export interface Page {
   meta?: MetaField;
   publishedAt?: string | null;
   fullPath?: string | null;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
+  slug?: string | null;
+  slugLock?: boolean | null;
   parent?: (string | null) | Page;
   breadcrumbs?:
     | {
@@ -1099,6 +1096,7 @@ export interface Post {
  */
 export interface Category {
   id: string;
+  tenant?: (string | null) | Tenant;
   title: string;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
@@ -1510,8 +1508,8 @@ export interface PagesSelect<T extends boolean = true> {
   meta?: T | MetaFieldSelect<T>;
   publishedAt?: T;
   fullPath?: T;
-  generateSlug?: T;
   slug?: T;
+  slugLock?: T;
   parent?: T;
   breadcrumbs?:
     | T
@@ -1806,6 +1804,7 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "categories_select".
  */
 export interface CategoriesSelect<T extends boolean = true> {
+  tenant?: T;
   title?: T;
   generateSlug?: T;
   slug?: T;

@@ -1,13 +1,13 @@
 import type { CollectionConfig } from 'payload'
 
 import { isSuperAdminOrSelf, isSelf } from '@/access/isSelf'
-import { isSuperAdmin, isSuperAdminFieldLevel } from '@/access/isSuperAdmin'
+import { isSuperAdminAccess, isSuperAdminFieldLevel } from '@/access/isSuperAdmin'
 
 export const Users: CollectionConfig = {
   slug: 'users',
   access: {
-    create: isSuperAdmin,
-    delete: isSuperAdmin,
+    create: isSuperAdminAccess,
+    delete: isSuperAdminAccess,
     read: isSuperAdminOrSelf,
     update: isSelf
   },
@@ -70,12 +70,7 @@ export const Users: CollectionConfig = {
         update: isSuperAdminFieldLevel
       }
     },
-    // {
-    //   name: 'tenant',
-    //   saveToJWT: true,
-    //   type: 'relationship',
-    //   relationTo: 'tenants'
-    // }
+   
   ],
   timestamps: true,
 }
