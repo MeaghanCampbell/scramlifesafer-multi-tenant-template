@@ -1,36 +1,42 @@
 import type { Metadata } from 'next'
-
 import { draftMode } from 'next/headers'
 import React from 'react'
+import Script from 'next/script'
+
 import { fetchPageBySlug } from '@/utilities/fetchPageBySlug'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
-import NotFound from '@/app/(frontend)/not-found'
+import NotFound from '@/app/(frontend)/[domain]/not-found'
 import { generateSchemaForPage } from '@/utilities/generateSchema'
-import Script from 'next/script'
 
-export const dynamicParams = true;
+export const dynamicParams = true
 
 type PageProps = {
   params: Promise<{
-    slug: string[]
+    domain: string
+    slug?: string[]
   }>
 }
 
-async function getPageData(slugParam?: string[]) {
+async function getPageData(domain: string, slugParam?: string[]) {
   const segments = slugParam ?? []
   const fullPath = segments.length > 0 ? segments.join('/') : 'home'
-  const page = await fetchPageBySlug(fullPath)
+
+  const page = await fetchPageBySlug({
+    domain,
+    fullPath,
+  })
+
   return { page, fullPath }
 }
 
 export default async function Page({ params }: PageProps) {
-  
   const { isEnabled: draft } = await draftMode()
-  const { slug } = await params
-  const { page } = await getPageData(slug)
+  const { domain, slug } = await params
+
+  const { page } = await getPageData(domain, slug)
 
   if (!page) return <NotFound />
 
@@ -43,6 +49,7 @@ export default async function Page({ params }: PageProps) {
 
       <RenderHero {...page.hero} />
       <RenderBlocks blocks={page.layout} />
+
       {webPageSchema && (
         <Script id="structured-data" type="application/ld+json" strategy="beforeInteractive">
           {JSON.stringify(webPageSchema)}
@@ -53,7 +60,7 @@ export default async function Page({ params }: PageProps) {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params
-  const { page } = await getPageData(slug)
+  const { domain, slug } = await params
+  const { page } = await getPageData(domain, slug)
   return page ? generateMeta({ doc: page }) : {}
 }

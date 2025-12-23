@@ -22,7 +22,13 @@ import { getServerSideURL } from './utilities/getURL'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+const allowedDomains = process.env.ALLOWED_DOMAINS
+    ? process.env.ALLOWED_DOMAINS.split(',')
+    : [];
+
 export default buildConfig({
+  serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
+  routes: { api: '/api', admin: '/admin' },
   admin: {
     avatar: 'default',
     importMap: {
@@ -73,7 +79,9 @@ export default buildConfig({
   //   apiKey: process.env.RESEND_API_KEY || '',
   // }),
   collections: [Pages, Posts, Media, Categories, Users, Tenants, Navigations, Footers],
-  cors: [getServerSideURL()].filter(Boolean),
+  cors: {
+    origins: allowedDomains
+  },
   plugins: [
     ...plugins,
     // storage-adapter-placeholder

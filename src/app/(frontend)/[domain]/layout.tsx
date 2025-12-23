@@ -12,8 +12,15 @@ import { expectedSigFor } from '@/utilities/honeypotSign'
 
 import './globals.css'
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function DomainLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode
+  params: Promise<{ domain: string }>
+}) {
   const { isEnabled } = await draftMode()
+  const { domain } = await params
   const tsMs = Date.now()
   const hpSig = expectedSigFor(tsMs)
   const hpPair = `${tsMs}:${hpSig}`
@@ -21,7 +28,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang={language}>
-      <body>
+      <body data-tenant={domain}>
 
           {/* Tracking scripts here use next/script beforeInteractive or afterInteractive */}
           <HoneypotSigProvider sig={hpPair}>
