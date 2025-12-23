@@ -1,58 +1,49 @@
 import type { Metadata } from 'next'
+import React, { cache } from 'react'
+import Script from 'next/script'
+import { draftMode } from 'next/headers'
+
 import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
+import RichText from '@/components/RichText'
+import { PostHero } from '@/heros/PostHero'
+import { LivePreviewListener } from '@/components/LivePreviewListener'
+
+import { generateSchemaFromPost } from '@/utilities/generateSchema'
+import { generateMeta } from '@/utilities/generateMeta'
+
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
-import { draftMode } from 'next/headers'
-import React, { cache } from 'react'
-import RichText from '@/components/RichText'
-import { generateSchemaFromPost } from '@/utilities/generateSchema'
 import type { Post } from '@/payload-types'
-import { PostHero } from '@/heros/PostHero'
-import { generateMeta } from '@/utilities/generateMeta'
-import { LivePreviewListener } from '@/components/LivePreviewListener'
-import Script from 'next/script'
 
-export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const posts = await payload.find({
-    collection: 'posts',
-    draft: false,
-    limit: 1000,
-    overrideAccess: false,
-    pagination: false,
-    select: {
-      slug: true,
-    },
-  })
-
-  const params = posts.docs.map(({ slug }) => {
-    return { slug }
-  })
-
-  return params
-}
+export const dynamicParams = true
 
 type Args = {
   params: Promise<{
+    domain: string
     slug?: string
   }>
 }
 
-export default async function Post({ params: paramsPromise }: Args) {
+export default async function PostPage({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
-  const { slug = '' } = await paramsPromise
-  const url = '/blog/' + slug
-  const post = await queryPostBySlug({ slug })
+  const { domain, slug = '' } = await paramsPromise
+
+  const url = `/${domain}/blog/${slug}` // internal rewritten path
+  const post = await queryPostBySlug({ domain, slug })
 
   if (!post) return <PayloadRedirects url={url} />
 
-  const schema = generateSchemaFromPost(post, process.env.NEXT_PUBLIC_SITE_URL!, 'posts', 'BlogPosting')
+  const schema = generateSchemaFromPost(
+    post,
+    process.env.NEXT_PUBLIC_SITE_URL!,
+    'posts',
+    'BlogPosting',
+  )
 
   return (
     <>
       <article className="pt-16 pb-16">
-
         {/* Allows redirects for valid pages too */}
         <PayloadRedirects disableNotFound url={url} />
 
@@ -62,14 +53,16 @@ export default async function Post({ params: paramsPromise }: Args) {
 
         <div className="flex flex-col gap-4 pt-8 px-4 max-w-2xl mx-auto">
           <RichText data={post.content} />
+
           {post.relatedPosts && post.relatedPosts.length > 0 && (
             <RelatedPosts
               className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
-              docs={post.relatedPosts.filter((post) => typeof post === 'object')}
+              docs={post.relatedPosts.filter((p) => typeof p === 'object')}
             />
           )}
         </div>
       </article>
+
       {schema && (
         <Script id="post-schema" type="application/ld+json" strategy="beforeInteractive">
           {JSON.stringify(schema)}
@@ -80,15 +73,13 @@ export default async function Post({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { slug = '' } = await paramsPromise
-  const post = await queryPostBySlug({ slug })
-
-  return generateMeta({ doc: post })
+  const { domain, slug = '' } = await paramsPromise
+  const post = await queryPostBySlug({ domain, slug })
+  return post ? generateMeta({ doc: post }) : {}
 }
 
-const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
+const queryPostBySlug = cache(async ({ domain, slug }: { domain: string; slug: string }) => {
   const { isEnabled: draft } = await draftMode()
-
   const payload = await getPayload({ config: configPromise })
 
   const result = await payload.find({
@@ -98,11 +89,12 @@ const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
     overrideAccess: draft,
     pagination: false,
     where: {
-      slug: {
-        equals: slug,
-      },
+      and: [
+        { slug: { equals: slug } },
+        { 'tenant.domain': { equals: domain } }, // ✅ tenant filter
+      ],
     },
   })
 
-  return result.docs?.[0] || null
+  return (result.docs?.[0] as Post) || null
 })

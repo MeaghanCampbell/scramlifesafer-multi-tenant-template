@@ -35,9 +35,9 @@ export default async function DomainLayout({
 
             <AdminBar adminBarProps={{ preview: isEnabled }} />
 
-            <Navigation />
+            <Navigation domain={domain} />
               {children}
-            <Footer />
+            <Footer domain={domain} />
 
           </HoneypotSigProvider>
 

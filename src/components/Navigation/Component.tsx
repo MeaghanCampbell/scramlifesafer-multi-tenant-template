@@ -3,18 +3,16 @@ import { Logo } from '@/components/Logo/Logo'
 import { DesktopNav } from './Nav/DesktopNav'
 import { MobileNav } from './Nav/MobileNav'
 import { Container } from '@/components/Container'
-import { getTenantFromHeaders } from '@/utilities/getTenantFromHeaders'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import type { Navigation as NavigationType } from '@/payload-types'
+import { getTenantByDomain } from '@/utilities/getTenantByDomain'
 
-export async function Navigation() {
-  const tenant = await getTenantFromHeaders()
+export async function Navigation({ domain }: { domain: string }) {
+  const tenant = await getTenantByDomain(domain)
   if (!tenant) return null
-  const navigationData = await getCachedGlobal<NavigationType>(
-    'navigations',
-    tenant.id,
-    1,
-  )()  
+
+  const navigationData = await getCachedGlobal<NavigationType>('navigations', tenant.id, 1)()
+
   if (!navigationData) return null
 
   return (

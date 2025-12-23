@@ -1,4 +1,4 @@
-import { getTenantFromHeaders } from '@/utilities/getTenantFromHeaders'
+import { getTenantByDomain } from '@/utilities/getTenantByDomain'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import type { Footer as FooterType } from '@/payload-types'
 import React from 'react'
@@ -6,9 +6,10 @@ import { Container } from '@/components/Container'
 import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo/Logo'
 
-export async function Footer() {
-  const tenant = await getTenantFromHeaders()
+export async function Footer({ domain }: { domain: string }) {
+  const tenant = await getTenantByDomain(domain)
   if (!tenant) return null
+  
   const footerData = await getCachedGlobal<FooterType>('footers', tenant.id, 1)()
 
   const navItems = footerData?.navItems || []

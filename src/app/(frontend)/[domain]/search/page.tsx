@@ -1,12 +1,13 @@
 import type { Metadata } from 'next/types'
+import React from 'react'
 
 import { CollectionArchive } from '@/components/CollectionArchive'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
-import React from 'react'
 import { Search } from '@/search/Component'
 import { CardPostData } from '@/components/Card'
 import { Container } from '@/components/Container'
+
+import configPromise from '@payload-config'
+import { getPayload } from 'payload'
 
 export const metadata: Metadata = {
   title: 'Search | site-name',
@@ -23,15 +24,21 @@ export const metadata: Metadata = {
 }
 
 type Args = {
+  params: Promise<{
+    domain: string
+  }>
   searchParams: Promise<{
-    q: string
+    q?: string
   }>
 }
-export default async function Page({ searchParams: searchParamsPromise }: Args) {
+
+export default async function Page({ params: paramsPromise, searchParams: searchParamsPromise }: Args) {
+  const { domain } = await paramsPromise
   const { q: query } = await searchParamsPromise
+
   const payload = await getPayload({ config: configPromise })
 
-  const posts = await payload.find({
+  const result = await payload.find({
     collection: 'search',
     depth: 1,
     limit: 12,
@@ -40,37 +47,31 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
       slug: true,
       meta: true,
     },
-    // pagination: false reduces overhead if you don't need totalDocs
-    pagination: false,
-    ...(query
-      ? {
-          where: {
-            or: [
+    pagination: false, // keep it lightweight
+    where: {
+      and: [
+        // ✅ tenant filter (assumes search docs have tenant relationship like pages/posts)
+        { 'tenant.domain': { equals: domain } },
+
+        // ✅ only apply query filters if q is present
+        ...(query
+          ? [
               {
-                title: {
-                  like: query,
-                },
+                or: [
+                  { title: { like: query } },
+                  { 'meta.description': { like: query } },
+                  { 'meta.title': { like: query } },
+                  { slug: { like: query } },
+                ],
               },
-              {
-                'meta.description': {
-                  like: query,
-                },
-              },
-              {
-                'meta.title': {
-                  like: query,
-                },
-              },
-              {
-                slug: {
-                  like: query,
-                },
-              },
-            ],
-          },
-        }
-      : {}),
+            ]
+          : []),
+      ],
+    },
   })
+
+  const docs = result.docs as unknown as CardPostData[]
+  const hasResults = docs.length > 0
 
   return (
     <div className="pt-24 pb-24">
@@ -84,11 +85,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
         </div>
       </Container>
 
-      {posts.totalDocs > 0 ? (
-        <CollectionArchive posts={posts.docs as CardPostData[]} />
-      ) : (
-        <Container>No results found.</Container>
-      )}
+      {hasResults ? <CollectionArchive posts={docs} /> : <Container>No results found.</Container>}
     </div>
   )
 }

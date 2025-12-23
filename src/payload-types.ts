@@ -1214,6 +1214,7 @@ export interface FormSubmission {
  */
 export interface Search {
   id: string;
+  tenant?: (string | null) | Tenant;
   title?: string | null;
   priority?: number | null;
   doc: {
@@ -2326,6 +2327,7 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
  * via the `definition` "search_select".
  */
 export interface SearchSelect<T extends boolean = true> {
+  tenant?: T;
   title?: T;
   priority?: T;
   doc?: T;

@@ -1,8 +1,8 @@
 import { CMSLink } from '@/components/Link'
-import type { Header as HeaderType } from '@/payload-types'
+import type { Navigation as NavigationType } from '@/payload-types'
 
 type CTASectionProps = {
-    cta: HeaderType['cta']
+    cta: NavigationType['cta']
 }
 
 export const CTASection: React.FC<CTASectionProps> = ({ cta }) => {

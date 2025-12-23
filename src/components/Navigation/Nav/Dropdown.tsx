@@ -1,9 +1,9 @@
 import React, { useRef } from 'react'
-import type { Header as HeaderType } from '@/payload-types'
+import type { Navigation as NaviationType } from '@/payload-types'
 import { CMSLink } from '@/components/Link'
 import { useDropdownPosition } from '@/utilities/useDropdownPosition'
 
-type NavItem = NonNullable<HeaderType['navItems']>[number]
+type NavItem = NonNullable<NaviationType['navItems']>[number]
 
 export function Dropdowns({
   isOpen,

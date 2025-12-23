@@ -68,6 +68,7 @@ export const plugins: Plugin[] = [
       redirects: {},
       navigations: { isGlobal: true },
       footers: { isGlobal: true },
+      search: {}
     },
     userHasAccessToAllTenants: (user) => isSuperAdmin(user),
     // debug: true, // optional: shows tenant fields in admin for troubleshooting
