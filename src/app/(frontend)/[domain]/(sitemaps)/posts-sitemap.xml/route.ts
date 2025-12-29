@@ -2,14 +2,13 @@ import { getServerSideSitemap } from 'next-sitemap'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { unstable_cache } from 'next/cache'
+import { NextRequest } from 'next/server'
+import { getTenantByDomain } from '@/utilities/getTenantByDomain'
+import { normalizeHost } from '@/utilities/normalizeHostDomain'
 
 const getPostsSitemap = unstable_cache(
-  async () => {
+  async (tenantID: string, siteURL: string) => {
     const payload = await getPayload({ config })
-    const SITE_URL =
-      process.env.NEXT_PUBLIC_SERVER_URL ||
-      process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-      'https://site-name.com'
 
     const results = await payload.find({
       collection: 'posts',
@@ -19,9 +18,11 @@ const getPostsSitemap = unstable_cache(
       limit: 1000,
       pagination: false,
       where: {
-        _status: {
-          equals: 'published',
-        },
+        and: [
+          { _status: { equals: 'published' } },
+          { tenant: { equals: tenantID } }, // tenant-scoped
+          { 'meta.hideFromSearch': { not_equals: true } },
+        ],
       },
       select: {
         slug: true,
@@ -32,24 +33,32 @@ const getPostsSitemap = unstable_cache(
     const dateFallback = new Date().toISOString()
 
     const sitemap = results.docs
-      ? results.docs
-          .filter((post) => Boolean(post?.slug))
-          .map((post) => ({
-            loc: `${SITE_URL}/blog/${post?.slug}`,
-            lastmod: post.updatedAt || dateFallback,
-          }))
-      : []
+    ? results.docs.map((post) => {
+        const path = `/blog/${post.slug}`
+        return {
+          loc: `${siteURL}${path}`,
+          lastmod: post.updatedAt || dateFallback,
+        }
+      })
+    : []
 
     return sitemap
   },
   ['posts-sitemap'],
-  {
-    tags: ['posts-sitemap'],
-  },
+  { tags: ['posts-sitemap'] }
 )
 
-export async function GET() {
-  const sitemap = await getPostsSitemap()
+export async function GET(req: NextRequest) {
+  const host = req.headers.get('host')
+  if (!host) return getServerSideSitemap([])
 
+  const domain = normalizeHost(host) // sitename.com
+  if (!domain) return getServerSideSitemap([])
+  const tenant = await getTenantByDomain(domain)
+  if (!tenant) return getServerSideSitemap([])
+
+  const siteURL = `https://${domain}`
+
+  const sitemap = await getPostsSitemap(String(tenant.id), siteURL)
   return getServerSideSitemap(sitemap)
 }

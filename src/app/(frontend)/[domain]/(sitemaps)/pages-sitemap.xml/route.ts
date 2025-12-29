@@ -2,14 +2,13 @@ import { getServerSideSitemap } from 'next-sitemap'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { unstable_cache } from 'next/cache'
+import { NextRequest } from 'next/server'
+import { getTenantByDomain } from '@/utilities/getTenantByDomain'
+import { normalizeHost } from '@/utilities/normalizeHostDomain'
 
 const getPagesSitemap = unstable_cache(
-  async () => {
+  async (tenantID: string, siteURL: string) => {
     const payload = await getPayload({ config })
-    const SITE_URL =
-      process.env.NEXT_PUBLIC_SERVER_URL ||
-      process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-      'https://site-name.com'
 
     const results = await payload.find({
       collection: 'pages',
@@ -19,12 +18,14 @@ const getPagesSitemap = unstable_cache(
       limit: 1000,
       pagination: false,
       where: {
-        _status: {
-          equals: 'published',
-        },
+        and: [
+          { _status: { equals: 'published' } },
+          { tenant: { equals: tenantID } }, // tenant-scoped
+          { 'meta.hideFromSearch': { not_equals: true } },
+        ],
       },
       select: {
-        slug: true,
+        fullPath: true,
         updatedAt: true,
       },
     })
@@ -32,37 +33,37 @@ const getPagesSitemap = unstable_cache(
     const dateFallback = new Date().toISOString()
 
     const defaultSitemap = [
-      {
-        loc: `${SITE_URL}/search`,
-        lastmod: dateFallback,
-      },
-      {
-        loc: `${SITE_URL}/blog`,
-        lastmod: dateFallback,
-      },
+      { loc: `${siteURL}/search`, lastmod: dateFallback },
+      { loc: `${siteURL}/blog`, lastmod: dateFallback },
     ]
 
     const sitemap = results.docs
-      ? results.docs
-          .filter((page) => Boolean(page?.slug))
-          .map((page) => {
-            return {
-              loc: page?.slug === 'home' ? `${SITE_URL}/` : `${SITE_URL}/${page?.slug}`,
-              lastmod: page.updatedAt || dateFallback,
-            }
-          })
+      ? results.docs.map((page) => {
+          const path = page.fullPath === 'home' ? '' : `/${page.fullPath}`
+          return {
+            loc: `${siteURL}${path}`,
+            lastmod: page.updatedAt || dateFallback,
+          }
+        })
       : []
 
     return [...defaultSitemap, ...sitemap]
   },
   ['pages-sitemap'],
-  {
-    tags: ['pages-sitemap'],
-  },
+  { tags: ['pages-sitemap'] }
 )
 
-export async function GET() {
-  const sitemap = await getPagesSitemap()
+export async function GET(req: NextRequest) {
+  const host = req.headers.get('host')
+  if (!host) return getServerSideSitemap([])
 
+  const domain = normalizeHost(host) // sitename.com
+  if (!domain) return getServerSideSitemap([])
+  const tenant = await getTenantByDomain(domain)
+  if (!tenant) return getServerSideSitemap([])
+
+  const siteURL = `https://${domain}`
+
+  const sitemap = await getPagesSitemap(String(tenant.id), siteURL)
   return getServerSideSitemap(sitemap)
 }
