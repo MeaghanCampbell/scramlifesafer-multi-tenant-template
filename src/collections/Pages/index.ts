@@ -43,29 +43,54 @@ export const Pages: CollectionConfig<'pages'> = {
   admin: {
     defaultColumns: ['title', 'slug', 'updatedAt', 'parent', '_status', 'tenant'],
     livePreview: {
-      url: ({ data, req }) => {
-        const slugValue = (data?.fullPath ?? data?.slug)
+      url: async ({ data, req }) => {
+        const slugValue = data?.fullPath ?? data?.slug
         const slug = typeof slugValue === 'string' ? slugValue.trim() : ''
-        if (!slug) return ''
-      
+        const tenantID = typeof data?.tenant === 'string' ? data.tenant : null
+    
+        if (!slug || !tenantID) return null
+    
+        const tenant = await req.payload.findByID({
+          collection: 'tenants',
+          id: tenantID,
+          depth: 0,
+        })
+    
+        const domain = typeof tenant?.domain === 'string' ? tenant.domain : null
+        if (!domain) return null
+    
         return generatePreviewPath({
           collection: 'pages',
-          slug: slug,
-          req
+          slug,
+          domain,
+          req,
         })
       },
     },
-    preview: (data, { req }) => {
-      const slugValue = (data?.fullPath ?? data?.slug)
+    preview: async (data, { req }) => {
+      const slugValue = data?.fullPath ?? data?.slug
       const slug = typeof slugValue === 'string' ? slugValue.trim() : ''
-      if (!slug) return ''
+      const tenantID = typeof data?.tenant === 'string' ? data.tenant : null
+    
+      if (!slug || !tenantID) return null
+    
+      const tenant = await req.payload.findByID({
+        collection: 'tenants',
+        id: tenantID,
+        depth: 0,
+      })
+    
+      const domain = typeof tenant?.domain === 'string' ? tenant.domain : null
+      if (!domain) return null
     
       return generatePreviewPath({
         collection: 'pages',
-        slug: slug,
-        req
+        slug,
+        domain,
+        req,
       })
     },
+    
     useAsTitle: 'title',
   },
   fields: [

@@ -50,22 +50,45 @@ export const Posts: CollectionConfig<'posts'> = {
   admin: {
     defaultColumns: ['title', 'slug', 'updatedAt'],
     livePreview: {
-      url: ({ data, req }) => {
-        const path = generatePreviewPath({
+      url: async ({ data, req }) => {
+        const tenantID = typeof data?.tenant === 'string' ? data.tenant : null
+        if (!tenantID) return null
+    
+        const tenant = await req.payload.findByID({
+          collection: 'tenants',
+          id: tenantID,
+          depth: 0,
+        })
+    
+        const domain = typeof tenant?.domain === 'string' ? tenant.domain : null
+        if (!domain) return null
+        return generatePreviewPath({
           slug: typeof data?.slug === 'string' ? data.slug : '',
           collection: 'posts',
+          domain,
           req,
         })
-
-        return path
       },
     },
-    preview: (data, { req }) =>
-      generatePreviewPath({
+    preview: async (data, { req }) => {
+      const tenantID = typeof data?.tenant === 'string' ? data.tenant : null
+      if (!tenantID) return null
+  
+      const tenant = await req.payload.findByID({
+        collection: 'tenants',
+        id: tenantID,
+        depth: 0,
+      })
+  
+      const domain = typeof tenant?.domain === 'string' ? tenant.domain : null
+      if (!domain) return null
+      return generatePreviewPath({
         slug: typeof data?.slug === 'string' ? data.slug : '',
         collection: 'posts',
+        domain,
         req,
-      }),
+      })
+    },
     useAsTitle: 'title',
   },
   fields: [
