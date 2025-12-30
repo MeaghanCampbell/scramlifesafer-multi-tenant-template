@@ -2,7 +2,7 @@
 import { parseCookies } from 'payload'
 import type { Access } from 'payload'
 
-export const isTenantAdmin: Access = ({ req }) => {
+export const isTenantAdmin: Access = ({ req, data }) => {
     
     const user = req?.user;
     if (!user) { return false }
@@ -14,6 +14,11 @@ export const isTenantAdmin: Access = ({ req }) => {
     const tenantAdmin = req?.user?.role?.includes('tenant-admin')
 
     if (superAdmin) {
+
+      if (data?.tenant) {
+        return true
+      }
+      
       if (selectedTenant && selectedTenant !== 'all-tenants') {
         return { tenant: { equals: selectedTenant } }
       }
@@ -26,6 +31,15 @@ export const isTenantAdmin: Access = ({ req }) => {
         .filter(Boolean) as string[]
   
       if (!tenantIDs.length) return false
+      
+      if (data?.tenant) {
+        const targetTenantID = typeof data.tenant === 'string' ? data.tenant : data.tenant?.id
+        if (tenantIDs.includes(targetTenantID)) {
+          return true
+        }
+        return false
+      }
+      
       return { tenant: { in: tenantIDs } }
     }
   

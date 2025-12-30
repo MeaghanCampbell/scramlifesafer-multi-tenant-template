@@ -137,11 +137,34 @@ export const Pages: CollectionConfig<'pages'> = {
         hidden: true,
       }
     },
-    ...slugField()
+    ...slugField(),
+    // {
+    //   name: 'parent',
+    //   type: 'relationship',
+    //   relationTo: 'pages',
+    //   admin: {
+    //     position: 'sidebar',
+    //   },
+    //   filterOptions: ({ data }) => {
+    //     // Filter parents by current tenant
+    //     const tenantId = data?.tenant
+        
+    //     if (!tenantId) {
+    //       // If no tenant selected, return no results
+    //       return {
+    //         id: { equals: 'none' }
+    //       }
+    //     }
+        
+    //     return {
+    //       tenant: { equals: tenantId }
+    //     }
+    //   },
+    // },
   ],
   hooks: {
-    afterChange: [revalidatePage],
     beforeChange: [populatePublishedAt, setFullPathFromBreadcrumbs, ensureUniqueFullPath ],
+    afterChange: [revalidatePage],
     afterDelete: [revalidateDelete],
   },
   versions: {
