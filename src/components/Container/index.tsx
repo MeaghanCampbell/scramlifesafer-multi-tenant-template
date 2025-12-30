@@ -38,7 +38,7 @@ type ContainerProps = {
 
     return (
         <section className={`${backgroundColor} ${className} ${relative}`} style={backgroundStyle}>
-            <div className={`${relative} z-10 max-w-content mx-auto px-6 sm:px-8`}>
+            <div className={`${relative} z-10 max-w-[78rem] mx-auto px-6 sm:px-8`}>
                 {children}
             </div>
         </section>
