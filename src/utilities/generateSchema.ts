@@ -79,21 +79,21 @@ const organizationSchema = (baseUrlRaw: string) => {
   }
 }
 
-const breadcrumbSchema = (baseUrlRaw: string, breadcrumbs: Page['breadcrumbs']) => {
-  if (!breadcrumbs?.length) return null
-  const baseUrl = normalizeBase(baseUrlRaw)
+// const breadcrumbSchema = (baseUrlRaw: string, breadcrumbs: Page['breadcrumbs']) => {
+//   if (!breadcrumbs?.length) return null
+//   const baseUrl = normalizeBase(baseUrlRaw)
 
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: breadcrumbs.map((crumb, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: (crumb?.label || '').replace(/\s+\(.*\)/, ''),
-      item: `${baseUrl}${crumb?.url || ''}`,
-    })),
-  }
-}
+//   return {
+//     '@context': 'https://schema.org',
+//     '@type': 'BreadcrumbList',
+//     itemListElement: breadcrumbs.map((crumb, index) => ({
+//       '@type': 'ListItem',
+//       position: index + 1,
+//       name: (crumb?.label || '').replace(/\s+\(.*\)/, ''),
+//       item: `${baseUrl}${crumb?.url || ''}`,
+//     })),
+//   }
+// }
 
 // Frequently Asked Questions
 
@@ -144,7 +144,7 @@ export const generateSchemaFromPost = (
  */
 export const generateSchemaForPage = (data: Page, baseUrlRaw: string) => {
   const baseUrl = normalizeBase(baseUrlRaw)
-  const { title, fullPath, meta, breadcrumbs, publishedAt, updatedAt, layout } = data
+  const { title, fullPath, meta, publishedAt, updatedAt, layout } = data
   const imageUrl = getImageUrl(meta?.image)
 
   const trimLeadingSlash = (s = '') => s.replace(/^\/+/, '')
@@ -221,11 +221,11 @@ export const generateSchemaForPage = (data: Page, baseUrlRaw: string) => {
   }
   
 
-  const crumbs = breadcrumbSchema(baseUrl, breadcrumbs)
+  // const crumbs = breadcrumbSchema(baseUrl, breadcrumbs)
 
   return [
     organizationSchema(baseUrl),
     pageSchema,
-    ...(crumbs ? [crumbs] : []),
+    // ...(crumbs ? [crumbs] : []),
   ]
 }

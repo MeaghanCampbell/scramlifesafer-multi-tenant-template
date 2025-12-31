@@ -1,4 +1,4 @@
-import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
+// import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { searchPlugin } from '@payloadcms/plugin-search'
@@ -40,12 +40,12 @@ export const plugins: Plugin[] = [
       }
     }
   }),
-  nestedDocsPlugin({
-    collections: ['pages'],
-    generateURL: (docs) =>  {
-      return docs.reduce((url, doc) => `${url}/${String(doc.slug)}`, '')
-    }
-  }),
+  // nestedDocsPlugin({
+  //   collections: ['pages'],
+  //   generateURL: (docs) =>  {
+  //     return docs.reduce((url, doc) => `${url}/${String(doc.slug)}`, '')
+  //   }
+  // }),
   seoPlugin({
     generateTitle,
     generateURL,

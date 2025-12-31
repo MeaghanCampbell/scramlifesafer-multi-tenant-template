@@ -13,7 +13,7 @@ import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { isPayloadAdminPanel } from '@/utilities/isPayloadAdminPanel'
 import { revalidateDelete, revalidatePage } from './hooks/revalidatePage'
 import meta from '@/fields/meta'
-import { setFullPathFromBreadcrumbs } from './hooks/setFullPathFromBreadcrumbs'
+import { setFullPathFromParent } from './hooks/setFullPathFromParent'
 import { ensureUniqueFullPath } from './hooks/ensureUniqueFullPath'
 import { slugField } from '@/fields/slug'
 
@@ -138,32 +138,20 @@ export const Pages: CollectionConfig<'pages'> = {
       }
     },
     ...slugField(),
-    // {
-    //   name: 'parent',
-    //   type: 'relationship',
-    //   relationTo: 'pages',
-    //   admin: {
-    //     position: 'sidebar',
-    //   },
-    //   filterOptions: ({ data }) => {
-    //     // Filter parents by current tenant
-    //     const tenantId = data?.tenant
-        
-    //     if (!tenantId) {
-    //       // If no tenant selected, return no results
-    //       return {
-    //         id: { equals: 'none' }
-    //       }
-    //     }
-        
-    //     return {
-    //       tenant: { equals: tenantId }
-    //     }
-    //   },
-    // },
+    {
+      name: 'parent',
+      type: 'relationship',
+      relationTo: 'pages',
+      admin: {
+        position: 'sidebar',
+      },
+      filterOptions: ({ data }) => ({
+        tenant: { equals: data?.tenant }
+      }),
+    },
   ],
   hooks: {
-    beforeChange: [populatePublishedAt, setFullPathFromBreadcrumbs, ensureUniqueFullPath ],
+    beforeChange: [populatePublishedAt, setFullPathFromParent, ensureUniqueFullPath ],
     afterChange: [revalidatePage],
     afterDelete: [revalidateDelete],
   },
