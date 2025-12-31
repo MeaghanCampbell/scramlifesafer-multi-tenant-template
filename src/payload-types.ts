@@ -172,6 +172,7 @@ export interface Page {
   slug?: string | null;
   slugLock?: boolean | null;
   parent?: (string | null) | Page;
+  virtualTenant?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -923,6 +924,7 @@ export interface Form {
     [k: string]: unknown;
   } | null;
   hubspotID?: string | null;
+  virtualTenant?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1042,6 +1044,7 @@ export interface Post {
   slug?: string | null;
   slugLock?: boolean | null;
   featured?: FeaturedField;
+  virtualTenant?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1461,6 +1464,7 @@ export interface PagesSelect<T extends boolean = true> {
   slug?: T;
   slugLock?: T;
   parent?: T;
+  virtualTenant?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1643,6 +1647,7 @@ export interface PostsSelect<T extends boolean = true> {
   slug?: T;
   slugLock?: T;
   featured?: T;
+  virtualTenant?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -2273,6 +2278,7 @@ export interface FormsSelect<T extends boolean = true> {
       };
   terms?: T;
   hubspotID?: T;
+  virtualTenant?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -16,6 +16,7 @@ import meta from '@/fields/meta'
 import { setFullPathFromParent } from './hooks/setFullPathFromParent'
 import { ensureUniqueFullPath } from './hooks/ensureUniqueFullPath'
 import { slugField } from '@/fields/slug'
+import virtualTenant from '@/fields/virtualTenant'
 
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
@@ -149,6 +150,7 @@ export const Pages: CollectionConfig<'pages'> = {
         tenant: { equals: data?.tenant }
       }),
     },
+    virtualTenant
   ],
   hooks: {
     beforeChange: [populatePublishedAt, setFullPathFromParent, ensureUniqueFullPath ],

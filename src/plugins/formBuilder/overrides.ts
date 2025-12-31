@@ -14,6 +14,7 @@ import { populateRefererFormSubmit } from '@/hooks/populateReferrerFormSubmit'
 import { populateDataFormSubmit } from '@/hooks/populateDataFormSubmit'
 import { sendSubmissionToHubspot } from '@/hooks/sendSubmissionToHubspot'
 import { setTenantFromForm } from '@/hooks/setTenantFromForm'
+import virtualTenant from '@/fields/virtualTenant'
 
 // FORM overrides (for the Forms collection)
 export const formOverrides = () => ({
@@ -113,6 +114,7 @@ export const formOverrides = () => ({
         label: 'Hubspot ID',
         admin: { position: 'sidebar' },
       },
+      virtualTenant
     ]
   },
 })

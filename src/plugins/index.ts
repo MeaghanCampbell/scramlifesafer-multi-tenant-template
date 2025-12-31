@@ -40,6 +40,9 @@ export const plugins: Plugin[] = [
       }
     }
   }),
+  // // Nested Docs Plugin has a saving order bug with the multi-tenat plugin
+  // // If fixed, uncomment & remove the parent field on pages, and update the 
+  // // setFullPathFromParent to use breadcrumbs instead
   // nestedDocsPlugin({
   //   collections: ['pages'],
   //   generateURL: (docs) =>  {
@@ -62,8 +65,8 @@ export const plugins: Plugin[] = [
   }),
   multiTenantPlugin({
     collections: {
-      pages: {},     // tenant-enabled
-      posts: {},     // tenant-enabled
+      pages: {},
+      posts: {},
       forms: {},
       redirects: {},
       'form-submissions': {},

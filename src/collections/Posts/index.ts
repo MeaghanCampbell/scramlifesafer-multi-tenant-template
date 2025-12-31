@@ -18,6 +18,7 @@ import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
 import { slugField } from '@/fields/slug'
 import meta from '@/fields/meta'
 import featured from '@/fields/featured'
+import virtualTenant from '@/fields/virtualTenant'
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
@@ -190,7 +191,8 @@ export const Posts: CollectionConfig<'posts'> = {
       },
     },
     ...slugField(),
-    featured
+    featured,
+    virtualTenant
   ],
   hooks: {
     afterChange: [revalidatePost],
