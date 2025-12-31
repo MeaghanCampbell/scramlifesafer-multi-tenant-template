@@ -79,21 +79,30 @@ const organizationSchema = (baseUrlRaw: string) => {
   }
 }
 
-// const breadcrumbSchema = (baseUrlRaw: string, breadcrumbs: Page['breadcrumbs']) => {
-//   if (!breadcrumbs?.length) return null
-//   const baseUrl = normalizeBase(baseUrlRaw)
+const breadcrumbSchema = (baseUrlRaw: string, fullPath: Page['fullPath']) => {
+  if (!fullPath) return null
+  const baseUrl = normalizeBase(baseUrlRaw)
+  const breadcrumbs = fullPath
+    .split("/")
+    .map(s => s.trim())
+    .filter(Boolean);
 
-//   return {
-//     '@context': 'https://schema.org',
-//     '@type': 'BreadcrumbList',
-//     itemListElement: breadcrumbs.map((crumb, index) => ({
-//       '@type': 'ListItem',
-//       position: index + 1,
-//       name: (crumb?.label || '').replace(/\s+\(.*\)/, ''),
-//       item: `${baseUrl}${crumb?.url || ''}`,
-//     })),
-//   }
-// }
+    const itemListElement = breadcrumbs.map((crumb, index) => {
+      const path = breadcrumbs.slice(0, index + 1).join("/");
+      return {
+        "@type": "ListItem",
+        position: index + 1,
+        name: (crumb || "").replace(/\s+\(.*\)/, ""),
+        item: `${baseUrl}/${path}`,
+      };
+    });
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement
+  }
+}
 
 // Frequently Asked Questions
 
@@ -221,11 +230,11 @@ export const generateSchemaForPage = (data: Page, baseUrlRaw: string) => {
   }
   
 
-  // const crumbs = breadcrumbSchema(baseUrl, breadcrumbs)
+  const crumbs = breadcrumbSchema(baseUrl, fullPath)
 
   return [
     organizationSchema(baseUrl),
     pageSchema,
-    // ...(crumbs ? [crumbs] : []),
+    ...(crumbs ? [crumbs] : []),
   ]
 }
