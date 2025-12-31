@@ -13,6 +13,7 @@ import { blockHoneypot } from '@/hooks/blockHoneypot'
 import { populateRefererFormSubmit } from '@/hooks/populateReferrerFormSubmit'
 import { populateDataFormSubmit } from '@/hooks/populateDataFormSubmit'
 import { sendSubmissionToHubspot } from '@/hooks/sendSubmissionToHubspot'
+import { setTenantFromForm } from '@/hooks/setTenantFromForm'
 
 // FORM overrides (for the Forms collection)
 export const formOverrides = () => ({
@@ -182,7 +183,7 @@ export const formSubmissionOverrides = {
     },
     hooks: {
       beforeValidate: [blockHoneypot],
-      beforeChange: [populateRefererFormSubmit, populateDataFormSubmit],
+      beforeChange: [populateRefererFormSubmit, setTenantFromForm, populateDataFormSubmit],
       afterChange: [sendSubmissionToHubspot]          
     }
 }

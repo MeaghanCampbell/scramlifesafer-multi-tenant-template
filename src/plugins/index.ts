@@ -66,6 +66,7 @@ export const plugins: Plugin[] = [
       posts: {},     // tenant-enabled
       forms: {},
       redirects: {},
+      'form-submissions': {},
       navigations: { isGlobal: true },
       footers: { isGlobal: true },
       search: {}
