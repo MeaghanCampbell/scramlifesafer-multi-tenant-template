@@ -74,23 +74,23 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
       },
       defaultValue: 'reference',
       options: [
-        { label: 'Internal link', value: 'reference' },
+        // { label: 'Internal link', value: 'reference' },
         { label: 'Custom URL', value: 'custom' },
       ],
     },
-    {
-      name: 'reference',
-      type: 'relationship',
-      admin: {
-        condition: (_, siblingData) =>
-          siblingData?.behavior === 'navigate' && siblingData?.type === 'reference',
-        width: '100%',
-      },
-      label: 'Document to link to',
-      maxDepth: 1,
-      relationTo: ['pages'],
-      required: true,
-    },
+    // {
+    //   name: 'reference',
+    //   type: 'relationship',
+    //   admin: {
+    //     condition: (_, siblingData) =>
+    //       siblingData?.behavior === 'navigate' && siblingData?.type === 'reference',
+    //     width: '100%',
+    //   },
+    //   label: 'Document to link to',
+    //   maxDepth: 1,
+    //   relationTo: ['pages'],
+    //   required: true,
+    // },
     {
       name: 'url',
       type: 'text',

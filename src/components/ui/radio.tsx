@@ -30,14 +30,14 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ value, onChange, options
             value={opt.value}
             id={`${name}-${opt.value}`}
             className={cn(
-              'cursor-pointer bg-white h-4 w-4 rounded-full border border-slate-400 data-[state=checked]:border-primary data-[state=checked]:bg-primary-500 flex items-center justify-center',
+              'cursor-pointer bg-white h-4 w-4 rounded-full border border-primary-900 data-[state=checked]:bg-primary-500 flex items-center justify-center',
             )}
           >
             <RadioGroupPrimitive.Indicator
               className={cn('h-2 w-2 rounded-full bg-white')}
             />
           </RadioGroupPrimitive.Item>
-          <label htmlFor={`${name}-${opt.value}`} className="cursor-pointer">
+          <label htmlFor={`${name}-${opt.value}`} className="cursor-pointer text-secondary-100">
             {opt.label}
           </label>
         </div>

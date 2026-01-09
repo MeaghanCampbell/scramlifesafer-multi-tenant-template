@@ -32,7 +32,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   return (
     <div className="flex flex-col gap-2">
       {options.map((opt) => (
-        <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
+        <label key={opt.value} className="flex items-center gap-2 cursor-pointer text-secondary-100">
           <Checkbox
             checked={value.includes(opt.value)}
             onCheckedChange={() => handleToggle(opt.value)}

@@ -1,23 +1,34 @@
 import { withPayload } from '@payloadcms/next/withPayload'
 
-const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : undefined || process.env.__NEXT_PRIVATE_ORIGIN || 'http://localhost:3000'
+const isDev = process.env.NODE_ENV === 'development'
+const isPreview = process.env.VERCEL_ENV === 'preview'
+
+const allowedDomains = process.env.ALLOWED_DOMAINS
+  ? process.env.ALLOWED_DOMAINS.split(',').map(url => {
+      try {
+        return new URL(url.trim()).hostname
+      } catch {
+        return url.trim()
+      }
+    })
+  : []
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  allowedDevOrigins: ['scramsystems', 'scramcamconnect'],
+  allowedDevOrigins: ['tenant-site-name'],
   images: {
-    remotePatterns: [
-      ...[NEXT_PUBLIC_SERVER_URL /* 'https://site-name.com' */].map((item) => {
-        const url = new URL(item)
-
-        return {
-          hostname: url.hostname,
-          protocol: url.protocol.replace(':', ''),
-        }
-      }),
-    ],
+    unoptimized: isPreview,
+    remotePatterns: isDev
+      ? [{ protocol: 'http', hostname: 'localhost', port: '3000' }]
+      : [
+          // Map all allowed domains to remote patterns
+          ...allowedDomains.map(hostname => ({
+            protocol: 'https',
+            hostname: hostname,
+          })),
+          // Add Vercel blob storage
+          { protocol: 'https', hostname: 'blob.vercel-storage.com' },
+        ],
   },
   reactStrictMode: true,
   async redirects() {
@@ -32,3 +43,4 @@ const nextConfig = {
 }
 
 export default withPayload(nextConfig, { devBundleServerPackages: false })
+

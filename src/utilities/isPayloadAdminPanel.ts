@@ -1,17 +1,15 @@
-// Checks if a page is being accessed from the admin panel
-
-import type { PayloadRequest } from 'payload';
+import type { PayloadRequest } from 'payload'
 
 export const isPayloadAdminPanel = (req: PayloadRequest) => {
+  // If there’s an authenticated user, this is an admin-origin request.
+  // This includes relationship option queries to /api/* from the admin UI.
+  if (req.user) return true
 
-  if (req.payloadAPI === 'REST' && req.url?.startsWith(req.payload.config.routes.admin)) {
-    return true;
-  }
+  const adminRoute = req.payload.config.routes.admin // usually '/admin'
+  const url = req.url || ''
 
-  const adminRoute = req.payload.config.routes.admin;
-  const url = req.url || '';
+  // Handles server-side admin page loads
+  if (url.startsWith(adminRoute)) return true
 
-  const isAdminPath = url.startsWith(adminRoute);
-
-  return isAdminPath;
-};
+  return false
+}

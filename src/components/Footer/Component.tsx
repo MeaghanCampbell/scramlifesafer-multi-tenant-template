@@ -12,6 +12,8 @@ export async function Footer({ domain }: { domain: string }) {
   
   const footerData = await getCachedGlobal<FooterType>('footers', tenant.id, 1)()
 
+  if(!footerData) return null
+
   const navItems = footerData?.navItems || []
 
   return (

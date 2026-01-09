@@ -34,7 +34,7 @@ const PaginationContent = React.forwardRef<HTMLUListElement, React.ComponentProp
 PaginationContent.displayName = 'PaginationContent'
 
 const PaginationItem = React.forwardRef<HTMLLIElement, React.ComponentProps<'li'>>(
-  ({ className, ...props }, ref) => <li className={cn('list-none cursor-pointer text-secondary-dark', className)} ref={ref} {...props} />,
+  ({ className, ...props }, ref) => <li className={cn('list-none cursor-pointer', className)} ref={ref} {...props} />,
 )
 PaginationItem.displayName = 'PaginationItem'
 

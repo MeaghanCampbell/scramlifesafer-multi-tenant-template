@@ -7,3 +7,7 @@ This documentation explains the project structure, required environment variable
 ## 📁 Project Overview
 
 https://payloadcms.com/docs/plugins/multi-tenant
+
+## Current Bug
+
+Link field is erroring using the relationship type with the multi-tenant plugin. It is commented out for now but need to find a fix for this later.

@@ -1,51 +1,77 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-100: #000000;
   --color-primary-300: #000000;
   --color-primary-500: #000000;
   --color-primary-600: #000000;
+  --color-primary-700: #000000;
   --color-primary-900: #000000;
 
-  --color-secondary-light: #000000;
-  --color-secondary-dark: #000000;
+  --color-secondary-100: #000000;
+  --color-secondary-300: #000000;
+  --color-secondary-500: #000000;
+  --color-secondary-900: #000000;
 
-  --color-error-light: #000000;
-  --color-error-dark: #000000;
+  --color-body-text: #000000;
+
+  --color-button-primary-bg: #000000;
+  --color-button-primary-text: #000000;
+  --color-button-secondary-bg: #000000;
+  --color-button-secondary-text: #000000;
+
+  --color-link: #000000;
+
+  --radius-button: 0px;
+  --radius-card: 0px;
+  --radius-top-large: 0px;
+
+  --font-weight-body: 200;
 }
 
 @layer base {
   
   [data-tenant="scramcamconnect"] {
-    --color-primary-100: #d5f2c0;
-    --color-primary-300: #a5de7c;
-    --color-primary-500: #81d147;
-    --color-primary-600: #5ebc24;
-    --color-primary-900: #207218;
+    --color-primary-300: #4ba8d0;
+    --color-primary-500: #277fa6;
+    --color-primary-600: #206684;
+    --color-primary-700: #003b64;
+    --color-primary-900: #00121d;
 
-    --color-secondary-light: #41577c;
-    --color-secondary-dark: #0e2448;
+    --color-secondary-100: #ffffff;
+    --color-secondary-300: #99A1Af;
+    --color-secondary-500: #6b6b6b;
+    --color-secondary-900: #2d2d2d;
 
-    --color-error-light: #f7d9d4;
-    --color-error-dark: #d23c28;
+    --color-body-text: var(--color-secondary-900);
+
+    --color-button-primary-bg: var(--color-secondary-100);
+    --color-button-primary-text: var(--color-primary-900);
+    --color-button-secondary-bg: var(--color-primary-300);
+    --color-button-secondary-text: var(--color-secondary-100);
+
+    --color-link: var(--color-primary-500);
+
+    --radius-button: 9999px;
+    --radius-card: .75rem;
+    --radius-top-large: 4rem 4rem 0 0;
+
+    --font-weight-body: 200;
   }
 
-  [data-tenant="scramsystems"] {
-    --color-primary-100: #e0e7ff;
-    --color-primary-300: #adc0ff;
-    --color-primary-500: #7092ff;
-    --color-primary-600: #4772ff;
+  [data-tenant="testtenant"] {
+    --color-primary-300: #e0e7ff;
+    --color-primary-500: #97afff;
+    --color-primary-600: #7092ff;
+    --color-primary-700: #4772ff;
     --color-primary-900: #0a43ff;
+  }
 
-    --color-secondary-light: #d89a9e;
-    --color-secondary-dark: #361416;
-
-    --color-error-light: hsl(8 69% 90%);
-    --color-error-dark: hsl(7 68% 49%);
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
-    color: var(--color-secondary-dark);
+    color: var(--color-body-text);
   }
   
   h1 {
@@ -90,6 +116,10 @@
     h4 {
       font-size: 1.25rem;
     }
+  }
+
+  p, label, li {
+    font-weight: var(--font-weight-body);
   }
   
   ul li {

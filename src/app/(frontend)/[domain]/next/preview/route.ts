@@ -40,8 +40,14 @@ export async function GET(req: NextRequest): Promise<Response> {
   // Mint short-lived tenant hop token
   const token = jwt.sign({ domain, path }, PREVIEW_SECRET, { expiresIn: '10m' })
 
-  if (process.env.NODE_ENV === 'production') {
-    redirect(`https://${domain}.com/next/enable-preview?token=${encodeURIComponent(token)}`)
+  // Check if we're in development
+  if (process.env.NODE_ENV === 'development') {
+    redirect(`http://${domain}:3000/next/enable-preview?token=${encodeURIComponent(token)}`)
   }
-  redirect(`http://${domain}:3000/next/enable-preview?token=${encodeURIComponent(token)}`)
+  
+  // Check if we're on Vercel preview (staging)
+  const isStaging = process.env.VERCEL_ENV === 'preview'
+  const targetDomain = isStaging ? `staging.${domain}.com` : `${domain}.com`
+  
+  redirect(`https://${targetDomain}/next/enable-preview?token=${encodeURIComponent(token)}`)
 }

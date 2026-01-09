@@ -17,32 +17,12 @@ export const isSelf: Access = ({ req: { user } }) => {
     return false
 }
 
-/**
- * Grants access to admins, or to the authenticated user for their own document.
- *
- * @param req - Payload request containing the authenticated user
- * @returns `true` for admins, or a filter matching the user's own ID
- */
-export const isAdminOrSelf: Access = ({ req: { user } }) => {
-    if (user) {
-        if (user.role?.includes('admin')) {
-            return true
-        }
-        return {
-            id: {
-                equals: user.id
-            }
-        }
-    }
-    return false
-}
-
 
 export const isSuperAdminOrSelf: Access = ({ req: {user} }) => {
 
     if(user) {
 
-        if(user.role?.includes('super-admin')) {
+        if(user.role === 'super-admin') {
             return true
         }
 

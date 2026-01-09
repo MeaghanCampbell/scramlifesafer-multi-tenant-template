@@ -31,10 +31,14 @@ export async function GET(req: NextRequest) {
   const dm = await draftMode()
   dm.enable()
 
-  const target =
-  process.env.NODE_ENV === 'production'
-    ? `https://${domain}.com${path}`
-    : `http://${domain}:3000${path}`
-
-  return NextResponse.redirect(target)
+  // Check if we're in development
+  if (process.env.NODE_ENV === 'development') {
+    return NextResponse.redirect(`http://${domain}:3000${path}`)
+  }
+  
+  // Check if we're on Vercel preview (staging)
+  const isStaging = process.env.VERCEL_ENV === 'preview'
+  const targetDomain = isStaging ? `staging.${domain}.com` : `${domain}.com`
+  
+  return NextResponse.redirect(`https://${targetDomain}${path}`)
 }

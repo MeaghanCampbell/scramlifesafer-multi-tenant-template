@@ -12,6 +12,7 @@ import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant'
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
 import { isSuperAdmin } from '@/access/isSuperAdmin'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
@@ -77,5 +78,12 @@ export const plugins: Plugin[] = [
     userHasAccessToAllTenants: (user) => isSuperAdmin(user),
     // debug: true, // optional: shows tenant fields in admin for troubleshooting
     // cleanupAfterTenantDelete: false, // optional safety if you don’t want cascading deletes
+  }),
+  vercelBlobStorage({
+    enabled: true,
+    collections: {
+      media: true, // Enable for your media collection
+    },
+    token: process.env.BLOB_READ_WRITE_TOKEN!,
   }),
 ]

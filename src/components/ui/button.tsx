@@ -4,16 +4,16 @@ import { type VariantProps, cva } from 'class-variance-authority'
 import * as React from 'react'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded text-base font-semibold transition-colors disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center whitespace-nowrap rounded-button text-base transition-colors disabled:pointer-events-none disabled:opacity-50',
   {
     defaultVariants: {
       variant: 'primary',
     },
     variants: {
       variant: {
-        primary: 'bg-primary-500 hover:bg-primary-500/90 py-2 px-6',
-        secondary: 'text-slate-100 bg-secondary-dark hover:bg-secondary-dark/90 py-2 px-6',
-        link: 'text-secondary-dark items-start justify-start',
+        primary: 'bg-button-primary-bg hover:bg-button-primary-bg/90 text-button-primary-text py-2 px-6',
+        secondary: 'text-button-secondary-text bg-button-secondary-bg hover:bg-button-secondary-bg/90 py-2 px-6',
+        link: 'text-link items-start justify-start',
       },
     },
   },

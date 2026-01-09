@@ -15,7 +15,7 @@ export const Users: CollectionConfig = {
     defaultColumns: ['name', 'email', 'role', 'tenant'],
     useAsTitle: 'name',
     hidden: (req) => {
-      return !req?.user?.role?.includes('super-admin')
+      return req?.user?.role !== 'super-admin';
     },
     group: 'Admin'
   },
@@ -68,7 +68,8 @@ export const Users: CollectionConfig = {
       ],
       access: {
         create: isSuperAdminFieldLevel,
-        update: isSuperAdminFieldLevel
+        update: isSuperAdminFieldLevel,
+        read: () => true
       }
     },
    
