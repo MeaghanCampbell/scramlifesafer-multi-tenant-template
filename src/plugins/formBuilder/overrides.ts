@@ -13,6 +13,7 @@ import { blockHoneypot } from '@/hooks/blockHoneypot'
 import { populateRefererFormSubmit } from '@/hooks/populateReferrerFormSubmit'
 import { populateDataFormSubmit } from '@/hooks/populateDataFormSubmit'
 import { sendSubmissionToHubspot } from '@/hooks/sendSubmissionToHubspot'
+import { sendDataToPardot } from '@/hooks/sendDataToPardot'
 import { setTenantFromForm } from '@/hooks/setTenantFromForm'
 import virtualTenant from '@/fields/virtualTenant'
 
@@ -93,7 +94,7 @@ export const formOverrides = () => ({
       },
 
       ...filteredDefaults,
-
+      virtualTenant,
       {
         name: 'terms',
         type: 'richText',
@@ -112,9 +113,34 @@ export const formOverrides = () => ({
         name: 'hubspotID',
         type: 'text',
         label: 'Hubspot ID',
-        admin: { position: 'sidebar' },
+        admin: { position: 'sidebar', description: 'Add your HubSpot ID to this textbox if sending form data to Hubspot.' },
       },
-      virtualTenant
+      {
+        name: 'pardotHandlerUrl',
+        type: 'text',
+        label: 'Pardot Form Handler URL',
+        admin: {
+          placeholder: 'https://go.yourdomain.com/l/...',
+          position: 'sidebar',
+          description: 'Add a Pardot endpoint to this textbox if sending form data to Pardot.'
+        },
+      },
+      {
+        name: 'pardotFields',
+        type: 'array',
+        label: 'Pardot Mapping',
+        admin: {
+          description: 'Add payload form field "names" to send to Pardot',
+          position: 'sidebar'
+        },
+        fields: [
+          {
+            name: 'fieldName',
+            type: 'text',
+            label: 'Fields',
+          }
+        ],
+      },
     ]
   },
 })
@@ -140,8 +166,21 @@ export const formSubmissionOverrides = {
     },
     fields: ({ defaultFields }: { defaultFields: Field[] }): Field[] => {
 
+      const updatedDefaultFields = defaultFields.map(field => {
+        if ('name' in field && field.name === 'submissionData') {
+          return {
+            ...field,
+            admin: {
+              ...('admin' in field ? field.admin : {}),
+              hidden: true,
+            }
+          } as Field
+        }
+        return field
+      })
+
       return [
-        ...defaultFields,
+        ...updatedDefaultFields,
         {
           name: 'url',
           label: 'Page URL',
@@ -186,7 +225,7 @@ export const formSubmissionOverrides = {
     hooks: {
       beforeValidate: [blockHoneypot],
       beforeChange: [populateRefererFormSubmit, setTenantFromForm, populateDataFormSubmit],
-      afterChange: [sendSubmissionToHubspot]          
+      afterChange: [sendSubmissionToHubspot, sendDataToPardot]          
     }
 }
 

@@ -8,7 +8,9 @@ import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
 import { getServerSideURL } from '@/utilities/getURL'
 import { HoneypotSigProvider } from '@/components/HoneypotContext'
+import { GoogleTagManager } from '@next/third-parties/google'
 import { expectedSigFor } from '@/utilities/honeypotSign'
+import Script from 'next/script'
 
 import './globals.css'
 
@@ -30,7 +32,13 @@ export default async function DomainLayout({
     <html lang={language}>
       <body data-tenant={domain}>
 
-          {/* Tracking scripts here use next/script beforeInteractive or afterInteractive */}
+          {/* GTM & Osano Scripts - Replace GTM Container ID & Osano src to work for your site */}
+          {/* <GoogleTagManager gtmId='GTM-XXXXX' /> */}
+          {/* <Script id="osano" strategy='lazyOnload' src="https://cmp.osano.com/AzZMwZTuSswkf3YSk/5396eee0-1243-4e3f-a82f-3215eb8dec93/osano.js" /> */}
+          {/* <noscript>
+            <iframe src='https://www.googletagmanager.com/ns.html?id=GTM-XXXXX' height="0" width="0" style={{display:'none', visibility:'hidden'}}></iframe>
+          </noscript> */}
+
           <HoneypotSigProvider sig={hpPair}>
 
             <AdminBar adminBarProps={{ preview: isEnabled }} />

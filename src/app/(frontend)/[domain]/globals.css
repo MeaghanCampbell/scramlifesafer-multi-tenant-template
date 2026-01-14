@@ -118,6 +118,10 @@
     }
   }
 
+  p {
+    padding: .75em 0;
+  }
+
   p, label, li {
     font-weight: var(--font-weight-body);
   }

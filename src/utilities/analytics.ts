@@ -1,11 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-declare global {
-    interface Window {
-        dataLayer: any[];
-    }
-}
-
 export const pushToDataLayer = (obj: Record<string, any>) => {
     if (typeof window === 'undefined') return;
     window.dataLayer = window.dataLayer || [];
@@ -31,12 +25,6 @@ export const emitCustomerSubmission = (opts: {
         'message',
         'phone',
         'experience',
-        'fleetsize',
-        'fleetvehicle',
-        'fleetlocation',
-        'mobileinstall',
-        'fleetquantity',
-        'compliancestatus',
         'times',
         'age',
         'plan',
@@ -45,7 +33,6 @@ export const emitCustomerSubmission = (opts: {
         'contactpreference',
         'preference',
         'zipcode',
-        'client_type',
         'utm_source',
         'utm_medium',
         'utm_campaign',

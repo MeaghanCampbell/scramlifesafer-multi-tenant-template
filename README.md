@@ -11,3 +11,7 @@ https://payloadcms.com/docs/plugins/multi-tenant
 ## Current Bug
 
 Link field is erroring using the relationship type with the multi-tenant plugin. It is commented out for now but need to find a fix for this later.
+
+## To Dos:
+
+Figure out how to use resend SMTP - different domains for different email addresses
