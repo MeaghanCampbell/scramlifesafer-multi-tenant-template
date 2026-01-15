@@ -9,10 +9,11 @@ interface Props {
   priority?: 'auto' | 'high' | 'low'
   width: number
   height: number
+  tenant: string
 }
 
 export const Logo = (props: Props) => {
-  const { loading: loadingFromProps, priority: priorityFromProps, className, width, height } = props
+  const { loading: loadingFromProps, priority: priorityFromProps, className, width, height, tenant } = props
 
   const loading = loadingFromProps || 'lazy'
   const priority = priorityFromProps || 'low'
@@ -20,14 +21,14 @@ export const Logo = (props: Props) => {
   return (
     <Link href="/">
       <Image
-        alt="site-name Logo"
+        alt={`${tenant} logo`}
         width={width}
         height={height}
         loading={loading}
         fetchPriority={priority}
         decoding="async"
         className={clsx('max-w-[9.375rem] w-full h-[34px]', className)}
-        src="/site-name-logo.svg"
+        src={`/${tenant}-logo.png`}
       />
     </Link>
   )

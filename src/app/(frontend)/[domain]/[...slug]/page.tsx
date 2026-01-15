@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { draftMode } from 'next/headers'
+import { draftMode, headers } from 'next/headers'
 import React from 'react'
 import Script from 'next/script'
 
@@ -40,7 +40,9 @@ export default async function Page({ params }: PageProps) {
 
   if (!page) return <NotFound />
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.site-name.com'
+  const host = (await headers()).get('host')
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+  const siteUrl = host ? `${protocol}://${host}` : (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.site-name.com')
   const webPageSchema = generateSchemaForPage(page, siteUrl)
 
   return (

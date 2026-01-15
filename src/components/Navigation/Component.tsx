@@ -18,7 +18,7 @@ export async function Navigation({ domain }: { domain: string }) {
   return (
     <Container backgroundColor='bg-white' className="relative z-20">
       <header className="py-4 lg:py-6 flex flex-row-reverse lg:flex-row justify-between items-center">
-        <Logo loading="eager" priority="high" width={193} height={34} />
+        <Logo tenant={tenant.domain} loading="eager" priority="high" width={193} height={34} />
         <DesktopNav className='hidden lg:flex' data={navigationData} />
         <MobileNav className='lg:hidden' data={navigationData} />
       </header>

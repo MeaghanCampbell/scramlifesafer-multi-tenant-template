@@ -6,9 +6,10 @@ import { CollectionArchive } from '@/components/CollectionArchive'
 import { PageRange } from '@/components/PageRange'
 import { Pagination } from '@/components/Pagination'
 import { Container } from '@/components/Container'
-
+import { headers } from 'next/headers'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
+import { getTenantByDomain } from '@/utilities/getTenantByDomain'
 
 export const revalidate = 600
 export const dynamicParams = true
@@ -74,18 +75,39 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { domain, pageNumber } = await params
 
+  const page = Number(pageNumber)
+  // If you prefer 404 here too (instead of a generic metadata):
+  if (!Number.isInteger(page) || page < 1) notFound()
+
+  const tenant = await getTenantByDomain(domain)
+  const tenantName = tenant?.name ?? domain
+
+  const baseTitle = `Blog | ${tenantName}`
+  const title = page > 1 ? `${baseTitle} (Page ${page})` : baseTitle
+
+  const description = `Explore articles, product updates, and insights from ${tenantName}.`
+
+  const host = (await headers()).get("host")
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https"
+  const origin = host ? `${protocol}://${host}` : ""
+  const path = `/blog/page/${pageNumber}`
+  const url = origin ? new URL(path, origin) : path
+
   return {
-    title: 'Blog | site-name',
-    description: 'Explore articles, product updates, and insights from site-name.',
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
-      title: 'Blog | site-name',
-      description: 'Explore articles, product updates, and insights from site-name.',
-      url: `/${domain}/blog/page/${pageNumber}`,
+      title,
+      description,
+      url,
     },
     twitter: {
-      card: 'summary_large_image',
-      title: 'Blog | site-name',
-      description: 'Explore articles, product updates, and insights from site-name.',
+      card: "summary_large_image",
+      title,
+      description,
     },
   }
 }

@@ -1,19 +1,26 @@
 import type { Metadata } from 'next'
 
 import type { Media, Page, Post, Config } from '../payload-types'
-
+import { headers } from 'next/headers'
 import { mergeOpenGraph } from './mergeOpenGraph'
 import { getServerSideURL } from './getURL'
 
-const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
-  const serverUrl = getServerSideURL()
+const getImageURL = async (
+  image?: Media | Config['db']['defaultIDType'] | null,
+): Promise<string> => {
+  const host = (await headers()).get('host')
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
 
-  let url = serverUrl + '/website-template-OG.webp'
+  const metadataBase = host
+    ? new URL(`${protocol}://${host}`)
+    : new URL(getServerSideURL())
 
-  if (image && typeof image === 'object' && 'url' in image) {
+  // default OG image
+  let url = new URL('/website-template-OG.webp', metadataBase).toString()
+
+  if (image && typeof image === 'object' && 'url' in image && image.url) {
     const ogUrl = image.sizes?.og?.url
-
-    url = ogUrl ? serverUrl + ogUrl : serverUrl + image.url
+    url = new URL(ogUrl ?? image.url, metadataBase).toString()
   }
 
   return url
@@ -24,25 +31,22 @@ export const generateMeta = async (args: {
 }): Promise<Metadata> => {
   const { doc } = args
 
-  const ogImage = getImageURL(doc?.meta?.image)
+  const ogImage = await getImageURL(doc?.meta?.image)
 
-  const title = doc?.meta?.title
-    ? doc?.meta?.title + ' | site-name'
-    : 'site-name'
+  const title = doc?.meta?.title ?? 'site-name'
+  const description = doc?.meta?.description ?? ''
+
+  const path = Array.isArray(doc?.slug) ? `/${doc.slug.join('/')}` : (doc?.slug ? `/${doc.slug}` : '/')
 
   return {
-    description: doc?.meta?.description,
+    description,
     openGraph: mergeOpenGraph({
-      description: doc?.meta?.description || '',
-      images: ogImage
-        ? [
-            {
-              url: ogImage,
-            },
-          ]
-        : undefined,
       title,
-      url: Array.isArray(doc?.slug) ? doc?.slug.join('/') : '/',
+      description,
+      url: path,
+      images: ogImage
+        ? [{ url: ogImage }]
+        : undefined,
     }),
     title,
   }

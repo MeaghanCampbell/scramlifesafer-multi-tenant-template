@@ -19,7 +19,7 @@ export async function Footer({ domain }: { domain: string }) {
   return (
     <Container className={`border-t border-slate-200 py-6`}>
         <footer className="gap-8 flex flex-col md:flex-row md:justify-between md:items-center">
-            <Logo width={193} height={34} />
+            <Logo tenant={tenant.domain} width={193} height={34} />
             <nav className="flex flex-col md:flex-row gap-4">
               {navItems.map(({ link }, i) => {
                 return <CMSLink key={i} {...link} />

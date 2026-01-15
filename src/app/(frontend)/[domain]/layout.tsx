@@ -11,6 +11,8 @@ import { HoneypotSigProvider } from '@/components/HoneypotContext'
 import { GoogleTagManager } from '@next/third-parties/google'
 import { expectedSigFor } from '@/utilities/honeypotSign'
 import Script from 'next/script'
+import { getTenantByDomain } from '@/utilities/getTenantByDomain'
+import { headers } from 'next/headers'
 
 import './globals.css'
 
@@ -54,21 +56,47 @@ export default async function DomainLayout({
   )
 }
 
-export const metadata: Metadata = {
-  metadataBase: new URL(getServerSideURL()),
-  title: 'site-name',
-  description: 'A website for site-name',
-  robots: 'index, follow',
-  openGraph: mergeOpenGraph(),
-  twitter: {
-    card: 'summary_large_image',
-    title: 'site-name',
-    description: 'A website for site-name',
-  },
-  icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-  },
+export async function generateMetadata({
+  params,
+}: {
+  params: { domain: string }
+}): Promise<Metadata> {
+  const { domain } = await params
+
+  const tenant = await getTenantByDomain(domain)
+
+  const tenantName = tenant?.name ?? "SCRAM Admin"
+  const tenantDomain = tenant?.domain ?? domain
+
+  const description = `A website for ${tenantName}`
+
+  const host = (await headers()).get("host")
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https"
+  const metadataBase = host
+    ? new URL(`${protocol}://${host}`)
+    : new URL(getServerSideURL())
+
+  return {
+    metadataBase,
+    title: tenantName,
+    description,
+    alternates: {
+      canonical: '/'
+    },
+    openGraph: mergeOpenGraph({
+      title: tenantName,
+      description,
+    }),
+    twitter: {
+      card: "summary_large_image",
+      title: tenantName,
+      description,
+    },
+    icons: {
+      icon: `/${tenantDomain}-favicon.ico`,
+      shortcut: `/${tenantDomain}-favicon.ico`,
+    },
+  }
 }
 
 export const viewport: Viewport = {

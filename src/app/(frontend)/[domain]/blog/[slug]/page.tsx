@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import React, { cache } from 'react'
 import Script from 'next/script'
-import { draftMode } from 'next/headers'
+import { draftMode, headers } from 'next/headers'
 
 import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
@@ -34,9 +34,15 @@ export default async function PostPage({ params: paramsPromise }: Args) {
 
   if (!post) return <PayloadRedirects url={url} />
 
+  const host = (await headers()).get('host')
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+  const siteUrl = host
+    ? `${protocol}://${host}`
+    : (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.site-name.com')
+
   const schema = generateSchemaFromPost(
     post,
-    process.env.NEXT_PUBLIC_SITE_URL!,
+    siteUrl,
     'posts',
     'BlogPosting',
   )

@@ -5,9 +5,10 @@ import { CollectionArchive } from '@/components/CollectionArchive'
 import { PageRange } from '@/components/PageRange'
 import { Pagination } from '@/components/Pagination'
 import { Container } from '@/components/Container'
-
+import { getTenantByDomain } from '@/utilities/getTenantByDomain'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
+import { headers } from 'next/headers'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -22,18 +23,34 @@ type Props = {
 }
 
 
-export const metadata: Metadata = {
-  title: 'Blog | site-name',
-  description: 'Explore articles, product updates, and insights from site-name.',
-  openGraph: {
-    title: 'Blog | site-name',
-    description: 'Explore articles, product updates, and insights from site-name.',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Blog | site-name',
-    description: 'Explore articles, product updates, and insights from site-name.',
-  },
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { domain } = await params
+
+  const tenant = await getTenantByDomain(domain)
+  const tenantName = tenant?.name ?? domain
+
+  const title = `Blog | ${tenantName}`
+  const description = `Explore articles, product updates, and insights from ${tenantName}.`
+
+  const host = (await headers()).get("host")
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https"
+  const origin = host ? `${protocol}://${host}` : ""
+  const path = '/blog'
+  const url = origin ? new URL(path, origin) : path
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: { title, description, url },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  }
 }
 
 export default async function Page({ params, searchParams }: Props) {

@@ -5,25 +5,12 @@ import { CollectionArchive } from '@/components/CollectionArchive'
 import { Search } from '@/search/Component'
 import { CardPostData } from '@/components/Card'
 import { Container } from '@/components/Container'
-
+import { getTenantByDomain } from '@/utilities/getTenantByDomain'
+import { headers } from 'next/headers'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 
-export const metadata: Metadata = {
-  title: 'Search | site-name',
-  description: 'Search site-name for solutions.',
-  openGraph: {
-    title: 'Search | site-name',
-    description: 'Search site-name for solutions.',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Search | site-name',
-    description: 'Search site-name for solutions.',
-  },
-}
-
-type Args = {
+type Props = {
   params: Promise<{
     domain: string
   }>
@@ -32,7 +19,37 @@ type Args = {
   }>
 }
 
-export default async function Page({ params: paramsPromise, searchParams: searchParamsPromise }: Args) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { domain } = await params
+
+  const tenant = await getTenantByDomain(domain)
+  const tenantName = tenant?.name ?? domain
+
+  const title = `Blog | ${tenantName}`
+  const description = `Explore articles, product updates, and insights from ${tenantName}.`
+
+  const host = (await headers()).get("host")
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https"
+  const origin = host ? `${protocol}://${host}` : ""
+  const path = '/blog'
+  const url = origin ? new URL(path, origin) : path
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: { title, description, url },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  }
+}
+
+export default async function Page({ params: paramsPromise, searchParams: searchParamsPromise }: Props) {
   const { domain } = await paramsPromise
   const { q: query } = await searchParamsPromise
 
@@ -47,13 +64,12 @@ export default async function Page({ params: paramsPromise, searchParams: search
       slug: true,
       meta: true,
     },
-    pagination: false, // keep it lightweight
+    pagination: false,
     where: {
       and: [
-        // ✅ tenant filter (assumes search docs have tenant relationship like pages/posts)
+  
         { 'tenant.domain': { equals: domain } },
 
-        // ✅ only apply query filters if q is present
         ...(query
           ? [
               {
