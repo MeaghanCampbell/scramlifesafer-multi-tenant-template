@@ -327,11 +327,7 @@ export interface Media {
 export interface LinkField {
   behavior?: ('navigate' | 'openTarget') | null;
   newTab?: boolean | null;
-  type?: ('reference' | 'custom') | null;
-  reference?: {
-    relationTo: 'pages';
-    value: string | Page;
-  } | null;
+  type?: 'custom' | null;
   url?: string | null;
   label?: string | null;
   /**
@@ -908,6 +904,7 @@ export interface Form {
         id?: string | null;
       }[]
     | null;
+  virtualTenant?: string | null;
   terms?: {
     root: {
       type: string;
@@ -923,8 +920,23 @@ export interface Form {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Add your HubSpot ID to this textbox if sending form data to Hubspot.
+   */
   hubspotID?: string | null;
-  virtualTenant?: string | null;
+  /**
+   * Add a Pardot endpoint to this textbox if sending form data to Pardot.
+   */
+  pardotHandlerUrl?: string | null;
+  /**
+   * Add payload form field "names" to send to Pardot
+   */
+  pardotFields?:
+    | {
+        fieldName?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1503,7 +1515,6 @@ export interface LinkFieldSelect<T extends boolean = true> {
   behavior?: T;
   newTab?: T;
   type?: T;
-  reference?: T;
   url?: T;
   label?: T;
   mobileLabel?: T;
@@ -2276,9 +2287,16 @@ export interface FormsSelect<T extends boolean = true> {
         message?: T;
         id?: T;
       };
+  virtualTenant?: T;
   terms?: T;
   hubspotID?: T;
-  virtualTenant?: T;
+  pardotHandlerUrl?: T;
+  pardotFields?:
+    | T
+    | {
+        fieldName?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

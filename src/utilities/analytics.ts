@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+type WindowWithDataLayer = Window & {
+    dataLayer?: Array<Record<string, any>>;
+};
+  
 export const pushToDataLayer = (obj: Record<string, any>) => {
     if (typeof window === 'undefined') return;
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push(obj);
+    const w = window as WindowWithDataLayer;
+    w.dataLayer = w.dataLayer ?? [];
+    w.dataLayer.push(obj);
 };
 
 export const emitCustomerSubmission = (opts: {
